@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+	<component name="ProjectModuleManager">
+		<modules>
+			<module
+				fileurl="file://$PROJECT_DIR$/renren-security/renren-admin/HBJK-fileManagement.iml"
+				filepath="$PROJECT_DIR$/renren-security/renren-admin/HBJK-fileManagement.iml" />
+			<module fileurl="file://$PROJECT_DIR$/.idea/file_managements_system.iml"
+				filepath="$PROJECT_DIR$/.idea/file_managements_system.iml" />
+			<module
+				fileurl="file://$PROJECT_DIR$/renren-security/renren-api/renren-api.iml"
+				filepath="$PROJECT_DIR$/renren-security/renren-api/renren-api.iml" />
+			<module
+				fileurl="file://$PROJECT_DIR$/renren-security/renren-common/renren-common.iml"
+				filepath="$PROJECT_DIR$/renren-security/renren-common/renren-common.iml" />
+			<module
+				fileurl="file://$PROJECT_DIR$/renren-security/renren-dynamic-datasource/renren-dynamic-datasource.iml"
+				filepath="$PROJECT_DIR$/renren-security/renren-dynamic-datasource/renren-dynamic-datasource.iml" />
+			<module
+				fileurl="file://$PROJECT_DIR$/renren-security/renren-generator/renren-generator.iml"
+				filepath="$PROJECT_DIR$/renren-security/renren-generator/renren-generator.iml" />
+			<module fileurl="file://$PROJECT_DIR$/renren-security/renren-security.iml"
+				filepath="$PROJECT_DIR$/renren-security/renren-security.iml" />
+		</modules>
+	</component>
+</project>

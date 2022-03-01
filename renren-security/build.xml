@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="test" default="war" basedir=".">
+    <property name="VERSION_DIR_1" value="./renren-admin"/>
+    <property name="VERSION_DIR_2" value="./renren-api"/>
+    <property name="VERSION_DIR_3" value="./renren-common"/>
+    <property name="VERSION_DIR_4" value="./renren-dynamic-datasource"/>
+    <property name="VERSION_DIR_5" value="./renren-generator"/>
+
+    <!--java 源文件目录 -->
+    <property name="createTarget_1" value="${VERSION_DIR_1}/target"/>
+    <property name="createTarget_2" value="${VERSION_DIR_2}/target"/>
+    <property name="createTarget_3" value="${VERSION_DIR_3}/target"/>
+    <property name="createTarget_4" value="${VERSION_DIR_4}/target"/>
+    <property name="createTarget_5" value="${VERSION_DIR_5}/target"/>
+
+    <!--java 编译后class文件目录 -->
+    <property name="buildDir_1" value="${createTarget_1}/classes"/>
+    <property name="buildDir_2" value="${createTarget_2}/classes"/>
+    <property name="buildDir_3" value="${createTarget_3}/classes"/>
+    <property name="buildDir_4" value="${createTarget_4}/classes"/>
+    <property name="buildDir_5" value="${createTarget_5}/classes"/>
+
+    <!-- war包文件名 -->
+    <property name="war_admin" value="admin.war"/>
+    <property name="war_api" value="api.war"/>
+    <property name="war_common" value="common.war"/>
+    <property name="war_dynamic_datasource" value="dynamic-datasource.war"/>
+    <property name="war_generator" value="generator.war"/>
+
+    <!--清除打包目录-->
+    <target name="clean">
+        <!-- target 的name命名无关紧要，主要是里面的delete,mkdir,copy 等才是它执行的核心 -->
+        <delete dir="${createTarget_1}"/>
+        <delete dir="${createTarget_2}"/>
+        <delete dir="${createTarget_3}"/>
+        <delete dir="${createTarget_4}"/>
+        <delete dir="${createTarget_5}"/>
+    </target>
+
+
+    <!--初始化目录-->
+    <target name="init" depends="clean">
+        <mkdir dir="${buildDir_1}"/>
+        <mkdir dir="${buildDir_2}"/>
+        <mkdir dir="${buildDir_3}"/>
+        <mkdir dir="${buildDir_4}"/>
+        <mkdir dir="${buildDir_5}"/>
+    </target>
+
+    <!-- 创建时间戳 -->
+    <tstamp/>
+
+    <path id="lib">
+        <fileset dir="./lib">
+            <include name="*.jar"/>
+        </fileset>
+    </path>
+
+    <!--获得差异文件-->
+    <target name="dif" depends="init">
+        <exec executable="cmd.exe" dir="renren-admin" failonerror="true">
+            <arg value='/c git diff HEAD~2 --name-only  -- ./src/main/java/io/renren> change_java.txt'/>
+        </exec>
+        <exec executable="cmd.exe" dir="renren-admin" failonerror="true">
+            <arg value='/c git diff HEAD~2 --name-only -- ./src/main/resources> change_resource.txt'/>
+        </exec>
+
+        <exec executable="cmd.exe" dir="renren-api" failonerror="true">
+            <arg value='/c Git diff HEAD~2 --name-only -- ./src/main/java/io/renren> change_java.txt'/>
+        </exec>
+        <exec executable="cmd.exe" dir="renren-api" failonerror="true">
+            <arg value='/c Git diff HEAD~2 --name-only -- ./src/main/resources> change_resource.txt'/>
+        </exec>
+
+        <exec executable="cmd.exe" dir="renren-common" failonerror="true">
+            <arg value='/c Git diff HEAD~2 --name-only -- ./src/main/java/io/renren> change_java.txt'/>
+        </exec>
+
+        <exec executable="cmd.exe" dir="renren-dynamic-datasource" failonerror="true">
+            <arg value='/c Git diff HEAD~2 --name-only -- ./src/main/java/io/renren> change_java.txt'/>
+        </exec>
+
+        <exec executable="cmd.exe" dir="renren-generator" failonerror="true">
+            <arg value='/c Git diff HEAD~2 --name-only -- ./src/main/java/io/renren> change_java.txt'/>
+        </exec>
+        <exec executable="cmd.exe" dir="renren-generator" failonerror="true">
+            <arg value='/c Git diff HEAD~2 --name-only -- ./src/main/resources> change_resource.txt'/>
+        </exec>
+    </target>
+
+    <!--调整编译路径-->
+    <target name="replace" depends="dif">
+        <replace file="${VERSION_DIR_1}/change_java.txt" token="renren-security/renren-admin/src/main/java/io"
+                 value="io">
+        </replace>
+        <replace file="${VERSION_DIR_1}/change_resource.txt" token="renren-security/renren-admin/src/main/resources/"
+                 value="">
+        </replace>
+
+        <replace file="${VERSION_DIR_2}/change_java.txt" token="renren-security/renren-api/src/main/java/io" value="io">
+        </replace>
+        <replace file="${VERSION_DIR_2}/change_resource.txt" token="renren-security/renren-api/src/main/resources/"
+                 value="">
+        </replace>
+
+        <replace file="${VERSION_DIR_3}/change_java.txt" token="renren-security/renren-common/src/main/java/io"
+                 value="io">
+        </replace>
+
+        <replace file="${VERSION_DIR_4}/change_java.txt"
+                 token="renren-security/renren-dynamic-datasource/src/main/java/io" value="io">
+        </replace>
+
+        <replace file="${VERSION_DIR_5}/change_java.txt" token="renren-security/renren-generator/src/main/java/io"
+                 value="io">
+        </replace>
+        <replace file="${VERSION_DIR_5}/change_resource.txt"
+                 token="renren-security/renren-generator/src/main/resources/" value="">
+        </replace>
+    </target>
+
+    <!--检验txt文件是否为空-->
+    <target name="test" depends="replace">
+        <length file="renren-admin/change_java.txt" property="admin_java_size"/>
+        <condition property="admin_condition">
+            <!--size为0则返回true-->
+            <equals arg1="${admin_java_size}" arg2="0" />
+        </condition>
+        <length file="renren-admin/change_resource.txt" property="admin_resource_size"/>
+        <condition property="admin_condition_resource">
+            <!--size为0则返回true-->
+            <equals arg1="${admin_resource_size}" arg2="0" />
+        </condition>
+
+        <length file="renren-api/change_java.txt" property="api_java_size"/>
+        <condition property="api_condition">
+            <!--size为0则返回true-->
+            <equals arg1="${api_java_size}" arg2="0" />
+        </condition>
+        <length file="renren-api/change_resource.txt" property="api_resource_size"/>
+        <condition property="api_condition_resource">
+            <!--size为0则返回true-->
+            <equals arg1="${api_resource_size}" arg2="0" />
+        </condition>
+
+        <length file="renren-common/change_java.txt" property="common_java_size"/>
+        <condition property="common_condition">
+            <!--size为0则返回true-->
+            <equals arg1="${common_java_size}" arg2="0" />
+        </condition>
+
+        <length file="renren-dynamic-datasource/change_java.txt" property="dynamic-datasource_java_size"/>
+        <condition property="dynamic-datasource_condition">
+            <!--size为0则返回true-->
+            <equals arg1="${dynamic-datasource_java_size}" arg2="0" />
+        </condition>
+
+        <length file="renren-generator/change_java.txt" property="generator_java_size"/>
+        <condition property="generator_condition">
+            <!--size为0则返回true-->
+            <equals arg1="${generator_java_size}" arg2="0" />
+        </condition>
+        <length file="renren-generator/change_resource.txt" property="generator_resource_size"/>
+        <condition property="generator_condition_resource">
+            <!--size为0则返回true-->
+            <equals arg1="${generator_resource_size}" arg2="0" />
+        </condition>
+    </target>
+
+    <!--复制resource文件-->
+    <target name="copy-admin" depends="test" unless="admin_condition_resource">
+        <copy todir="${buildDir_1}">
+            <fileset dir="${VERSION_DIR_1}/src/main/resources">
+                <includesfile name="${VERSION_DIR_1}/change_resource.txt"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="copy-api" depends="test" unless="api_condition_resource">
+        <copy todir="${buildDir_2}">
+            <fileset dir="${VERSION_DIR_2}/src/main/resources">
+                <includesfile name="${VERSION_DIR_2}/change_resource.txt"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="copy-generator" depends="test" unless="generator_condition_resource">
+        <copy todir="${buildDir_5}">
+            <fileset dir="${VERSION_DIR_5}/src/main/resources">
+                <includesfile name="${VERSION_DIR_5}/change_resource.txt"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <!-- 编译java文件到classes目录下-->
+    <target name="compile_admin" depends="test" unless="admin_condition">
+        <javac srcdir="${VERSION_DIR_1}/src/main/java" destdir="${buildDir_1}" includeantruntime="true"
+               classpathref="lib">
+            <compilerarg line="-encoding UTF-8 "/>
+            <includesfile name="${VERSION_DIR_1}/change_java.txt"/>
+        </javac>
+    </target>
+    <target name="compile_api" depends="test" unless="api_condition">
+        <javac srcdir="${VERSION_DIR_2}/src/main/java" destdir="${buildDir_2}" includeantruntime="true"
+               classpathref="lib">
+            <compilerarg line="-encoding UTF-8 "/>
+            <includesfile name="${VERSION_DIR_2}/change_java.txt"/>
+        </javac>
+    </target>
+    <target name="compile_common" depends="test" unless="common_condition">
+        <javac srcdir="${VERSION_DIR_3}/src/main/java" destdir="${buildDir_3}" includeantruntime="true"
+               classpathref="lib">
+            <compilerarg line="-encoding UTF-8 "/>
+            <includesfile name="${VERSION_DIR_3}/change_java.txt"/>
+        </javac>
+    </target>
+    <target name="compile_dynamic_datasource" depends="test" unless="dynamic-datasource_condition">
+        <javac srcdir="${VERSION_DIR_4}/src/main/java" destdir="${buildDir_4}" includeantruntime="true"
+               classpathref="lib">
+            <compilerarg line="-encoding UTF-8 "/>
+            <includesfile name="${VERSION_DIR_4}/change_java.txt"/>
+        </javac>
+    </target>
+    <target name="compile_generator" depends="test" unless="generator_condition">
+        <javac srcdir="${VERSION_DIR_5}/src/main/java" destdir="${buildDir_5}" includeantruntime="true"
+               classpathref="lib" debug="on">
+            <compilerarg line="-encoding UTF-8 "/>
+            <includesfile name="${VERSION_DIR_5}/change_java.txt"/>
+        </javac>
+    </target>
+    <target name="war" depends="copy-admin,copy-api,copy-generator,compile_admin,compile_api,compile_common,compile_dynamic_datasource,compile_generator">
+        <war destfile="${VERSION_DIR_1}/admin.war" needxmlfile="false">
+            <lib dir="./lib">
+                <include name="*.jar"/>
+            </lib>
+            <classes dir="${buildDir_1}"/>
+        </war>
+        <war destfile="${VERSION_DIR_2}/api.war" needxmlfile="false">
+            <lib dir="./lib">
+                <include name="*.jar"/>
+            </lib>
+            <classes dir="${buildDir_2}"/>
+        </war>
+        <war destfile="${VERSION_DIR_3}/common.war" needxmlfile="false">
+            <lib dir="./lib">
+                <include name="*.jar"/>
+            </lib>
+            <classes dir="${buildDir_3}"/>
+        </war>
+        <war destfile="${VERSION_DIR_4}/dynamic-datasource.war" needxmlfile="false">
+            <lib dir="./lib">
+                <include name="*.jar"/>
+            </lib>
+            <classes dir="${buildDir_4}"/>
+        </war>
+        <war destfile="${VERSION_DIR_5}/generator.war" needxmlfile="false">
+            <lib dir="./lib">
+                <include name="*.jar"/>
+            </lib>
+            <classes dir="${buildDir_5}"/>
+        </war>
+    </target>
+</project>
